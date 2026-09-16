@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINI | Register Your Interest</title>
+<style>
+  :root{
+    --black:#111;
+    --white:#fff;
+    --off:#f5f5f2;
+    --line:#d7d7d2;
+    --muted:#6d6d68;
+    --accent:#1f1f1f;
+    --danger:#b3261e;
+    --success:#176b3a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--black);background:var(--off)}
+  .page{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr}
+  .visual{position:relative;min-height:100vh;background:#111;overflow:hidden}
+  .visual img{width:100%;height:100%;object-fit:cover;opacity:.78}
+  .visual:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.72))}
+  .brand{position:absolute;z-index:2;top:34px;left:40px;background:#fff;border-radius:50%;width:78px;height:78px;display:grid;place-items:center;padding:12px}
+  .brand img{width:100%;height:100%;object-fit:contain;opacity:1}
+  .hero-copy{position:absolute;z-index:2;left:40px;right:40px;bottom:48px;color:#fff}
+  .eyebrow{font-size:12px;letter-spacing:2.5px;font-weight:700;margin-bottom:12px}
+  h1{font-size:clamp(42px,5vw,76px);line-height:.94;margin:0 0 18px;text-transform:uppercase;letter-spacing:-2px}
+  .dealer-line{font-size:16px;letter-spacing:2px;font-weight:700;margin:-4px 0 18px;color:#fff}
+  .hero-copy p{max-width:560px;font-size:18px;line-height:1.45;margin:0;color:#eee}
+  .form-wrap{display:flex;align-items:center;justify-content:center;padding:42px 7vw;background:#fff}
+  .card{width:min(650px,100%)}
+  .topline{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  .topline h2{margin:0;font-size:30px;letter-spacing:-.6px}
+  .step{font-size:12px;color:var(--muted);letter-spacing:1px}
+  .question{display:none}
+  .question.active{display:block}
+  .qtitle{font-size:24px;line-height:1.15;margin:0 0 8px}
+  .hint{font-size:14px;color:var(--muted);margin:0 0 22px;line-height:1.4}
+  .options{display:grid;gap:10px}
+  .option{border:1px solid var(--line);padding:17px 18px;border-radius:3px;cursor:pointer;background:#fff;transition:.18s}
+  .option:hover{border-color:#555}
+  .option.selected{border-color:#111;background:#f1f1ee;box-shadow:inset 0 0 0 1px #111}
+  .option strong{display:block;font-size:16px}
+  .model-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .model-option{padding:10px 12px 14px;text-align:center;min-height:175px;display:flex;flex-direction:column;justify-content:flex-end}
+  .model-option img{width:100%;height:118px;object-fit:contain;display:block;margin:0 auto 8px}
+  .model-option strong{font-size:14px}
+  .not-sure-visual{height:118px;width:100%;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+  .not-sure-visual::before{content:"";position:absolute;width:74px;height:74px;border:2px solid #111;border-radius:50%}
+  .not-sure-visual{position:relative;font-size:42px;font-weight:700;line-height:1;z-index:0}
+  .not-sure-visual::before{z-index:-1}
+  .select-field{width:100%;appearance:auto;border:1px solid #bdbdb8;border-radius:3px;padding:14px 15px;font:inherit;background:#fff;outline:none}
+  .select-field:focus{border-color:#111;box-shadow:0 0 0 2px #eee}
+  .option span{display:block;color:var(--muted);font-size:13px;margin-top:5px;line-height:1.35}
+  label.field{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+  input[type=text],input[type=tel],input[type=email],textarea{
+    width:100%;border:1px solid #bdbdb8;border-radius:3px;padding:14px 15px;font:inherit;outline:none;background:#fff
+  }
+  textarea{min-height:105px;resize:vertical}
+  input:focus,textarea:focus{border-color:#111;box-shadow:0 0 0 2px #eee}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .field-group{margin-bottom:15px}
+  .required{color:var(--danger)}
+  .actions{display:flex;gap:10px;margin-top:24px}
+  button{border:0;border-radius:3px;padding:15px 20px;font-weight:700;cursor:pointer;font-size:14px}
+  .back{background:#eee;color:#111}
+  .next,.submit{background:#111;color:#fff;flex:1}
+  .next:hover,.submit:hover{background:#2d2d2d}
+  .progress{height:3px;background:#e7e7e2;margin:0 0 30px}
+  .progress i{display:block;height:100%;width:20%;background:#111;transition:.2s}
+  .error{font-size:13px;color:var(--danger);margin-top:10px;display:none}
+  .blocked{display:none;text-align:center;padding:25px 0}
+  .blocked h3{font-size:28px;margin:0 0 10px}
+  .blocked p{color:var(--muted);line-height:1.5}
+  .blocked .small{font-size:12px}
+  .callback-number{font-size:18px;margin:14px 0 0}
+  .success{display:none;text-align:center;padding:30px 0}
+  .success h3{font-size:34px;margin:0 0 10px}
+  .success p{color:var(--muted);line-height:1.5}
+  .fineprint{font-size:11px;color:#777;line-height:1.45;margin-top:18px}
+  .price-note{margin-top:14px;padding:12px 14px;background:#f5f5f2;font-size:12px;line-height:1.45;color:#555}
+  @media(max-width:850px){
+    .page{grid-template-columns:1fr}
+    .visual{min-height:43vh;height:43vh}
+    .brand{top:20px;left:20px;width:62px;height:62px}
+    .hero-copy{left:22px;right:22px;bottom:25px}
+    h1{font-size:44px}
+    .hero-copy p{font-size:15px}
+    .form-wrap{padding:32px 22px}
+  }
+  @media(max-width:520px){
+    .grid2{grid-template-columns:1fr}
+    .model-grid{grid-template-columns:1fr 1fr}
+    .model-option{min-height:150px}
+    .model-option img{height:95px}
+    .not-sure-visual{height:95px}
+    .qtitle{font-size:21px}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <section class="visual">
+    <img src="mini-hero.jpg" alt="MINI">
+    <div class="brand"><img src="mini-logo.png" alt="MINI"></div>
+    <div class="hero-copy">
+      <div class="eyebrow">REGISTER YOUR INTEREST</div>
+      <h1>MINI EVM<br>AUTOKRAFT</h1>
+      <div class="dealer-line">AUTHORIZED MINI DEALER</div>
+      <p>Tell us a little about what you're looking for. Our MINI team will get in touch with the right information for you.</p>
+    </div>
+  </section>
+
+  <main class="form-wrap">
+    <div class="card">
+      <div class="topline">
+        <h2>Find your MINI</h2>
+        <div class="step" id="stepLabel">1 / 6</div>
+      </div>
+      <div class="progress"><i id="progress"></i></div>
+
+      <form id="leadForm" novalidate>
+        <section class="question active" data-step="1">
+          <h3 class="qtitle">Are you looking to purchase a MINI Cooper?</h3>
+          <p class="hint">Choose the option that best describes your current intent.</p>
+          <div class="options">
+            <div class="option" data-value="Yes, I am considering purchasing a MINI."><strong>Yes, I am considering purchasing a MINI.</strong></div>
+            <div class="option" data-value="I'm exploring premium cars with the intention to buy."><strong>I'm exploring premium cars with the intention to buy.</strong></div>
+            <div class="option" data-value="No, I'm just browsing."><strong>No, I'm just browsing.</strong></div>
+          </div>
+          <div class="error">Please select an option.</div>
+        </section>
+
+        <section class="question" data-step="2">
+          <h3 class="qtitle">Which MINI model are you interested in?</h3>
+          <p class="hint">Your budget options on the next step will change according to your selected model.</p>
+          <div class="model-grid" id="modelOptions">
+            <div class="option model-option" data-value="MINI Cooper 3-Door">
+              <img src="mini-cooper-3door.png" alt="MINI Cooper 3-Door">
+              <strong>MINI Cooper 3-Door</strong>
+            </div>
+            <div class="option model-option" data-value="MINI Countryman C">
+              <img src="mini-countryman.png" alt="MINI Countryman">
+              <strong>MINI Countryman C</strong>
+            </div>
+            <div class="option model-option" data-value="MINI Cooper S">
+              <img src="mini-countryman-green.png" alt="MINI">
+              <strong>MINI Cooper S</strong>
+            </div>
+            <div class="option model-option" data-value="MINI Cooper Convertible">
+              <img src="mini-convertible.png" alt="MINI Cooper Convertible">
+              <strong>MINI Cooper Convertible</strong>
+            </div>
+            <div class="option model-option" data-value="Other Models">
+              <img src="mini-countryman-alt.png" alt="MINI">
+              <strong>Other Models</strong>
+            </div>
+            <div class="option model-option" data-value="Not Sure">
+              <div class="not-sure-visual" aria-hidden="true">?</div>
+              <strong>Not Sure</strong>
+            </div>
+          </div>
+          <div class="error">Please select a model.</div>
+        </section>
+
+        <section class="question" data-step="3">
+          <h3 class="qtitle">What is your budget for the selected MINI?</h3>
+          <p class="hint">Select the range that best matches your intended purchase budget.</p>
+          <div class="options" id="budgetOptions"></div>
+          <div class="price-note" id="priceNote" style="display:none"></div>
+          <div class="error">Please select your budget.</div>
+        </section>
+
+        <section class="question" data-step="4">
+          <h3 class="qtitle">Please select your district</h3>
+          <p class="hint">This helps our team connect you with the relevant MINI representative.</p>
+          <select id="districtSelect" class="select-field">
+            <option value="">Select your district</option>
+          </select>
+          <div class="error">Please select your district.</div>
+        </section>
+
+        <section class="question" data-step="5">
+          <h3 class="qtitle">What is the best time to contact you?</h3>
+          <p class="hint">Enter a preferred day/time, for example: “Weekdays after 6 PM” or “Saturday morning”.</p>
+          <label class="field" for="contactTime">Preferred contact time <span class="required">*</span></label>
+          <textarea id="contactTime" placeholder="Enter your preferred time to contact you"></textarea>
+          <div class="error">Please enter your preferred contact time.</div>
+        </section>
+
+        <section class="question" data-step="6">
+          <h3 class="qtitle">Where can we reach you?</h3>
+          <p class="hint">Please provide your details so our MINI team can follow up.</p>
+          <div class="grid2">
+            <div class="field-group"><label class="field" for="name">Full name <span class="required">*</span></label><input id="name" type="text" autocomplete="name" required></div>
+            <div class="field-group"><label class="field" for="phone">Mobile number <span class="required">*</span></label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" required></div>
+          </div>
+          <div class="field-group"><label class="field" for="email">Email address <span class="required">*</span></label><input id="email" type="email" autocomplete="email" required></div>
+          <div class="field-group"><label class="field" for="message">Anything else you'd like us to know? <span style="font-weight:400">(Optional)</span></label><textarea id="message" placeholder="Tell us anything relevant to your MINI purchase"></textarea></div>
+          <div class="actions"><button type="button" class="back" onclick="go(-1)">Back</button><button type="submit" class="submit">Register My Interest</button></div>
+          <div class="fineprint">By submitting this form, you agree to be contacted by the MINI team regarding your enquiry. This page is intended for genuine purchase enquiries.</div>
+        </section>
+
+        <div class="actions" id="navActions">
+          <button type="button" class="back" id="backBtn" onclick="go(-1)" style="display:none">Back</button>
+          <button type="button" class="next" id="nextBtn" onclick="go(1)">Continue</button>
+        </div>
+      </form>
+
+      <div class="blocked" id="blocked">
+        <h3>Thank you for your interest in MINI.</h3>
+        <p>At this time, we are prioritising customers who are actively considering a MINI purchase and whose budget aligns with the selected model.</p>
+        <p class="small">For further assistance, please contact our MINI team:</p>
+        <p class="callback-number"><strong>Phone No - +91 755888992</strong></p>
+
+      </div>
+
+      <div class="success" id="success">
+        <h3>You're on the MINI list.</h3>
+        <p>Thank you. Our team will contact you based on the details and preferred time you provided.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+/*
+  Replace this URL with your Google Apps Script / CRM endpoint.
+  Expected POST body: JSON.
+*/
+const FORM_ENDPOINT = "PASTE_YOUR_FORM_ENDPOINT_HERE";
+
+const districts = [
+  "Kasaragod","Kannur","Wayanad","Kozhikode","Malappuram","Palakkad",
+  "Thrissur","Ernakulam","Idukki","Kottayam","Alappuzha","Pathanamthitta",
+  "Kollam","Thiruvananthapuram","Outside Kerala"
+];
+
+/*
+  Indicative Kochi/Kerala on-road reference ranges, rounded for lead qualification.
+  These are intentionally ranges rather than promises; final pricing varies by
+  variant, insurance, offers, accessories and registration details.
+*/
+const budgetMap = {
+  "MINI Cooper 3-Door": {
+    low:"Below ₹56.5 lakh",
+    right:"₹56.5–₹69.5 lakh",
+    high:"Above ₹69.5 lakh",
+    note:"Indicative Kochi on-road range: about ₹56.7–₹69.4 lakh depending on variant."
+  },
+  "MINI Cooper S": {
+    low:"Below ₹56.5 lakh",
+    right:"₹56.5–₹69.5 lakh",
+    high:"Above ₹69.5 lakh",
+    note:"Indicative Kochi on-road range for the 3-Door range starts around ₹56.7 lakh; higher variants can exceed ₹69 lakh."
+  },
+  "MINI Countryman C": {
+    low:"Below ₹60.5 lakh",
+    right:"₹60.5–₹70 lakh",
+    high:"Above ₹70 lakh",
+    note:"Indicative Kochi on-road starting price: about ₹60.6 lakh for Countryman C."
+  },
+  "MINI Cooper Convertible": {
+    low:"Below ₹75 lakh",
+    right:"₹75–₹81 lakh",
+    high:"Above ₹81 lakh",
+    note:"Indicative Kochi on-road range: about ₹75.2–₹80.2 lakh depending on variant."
+  },
+  "Other Models": {
+    low:"Below ₹55 lakh",
+    right:"₹55–₹70 lakh",
+    high:"Above ₹70 lakh",
+    note:"Budget qualification for other MINI models is indicative and will be confirmed by the MINI team."
+  },
+  "Not Sure": {
+    low:"Below ₹55 lakh",
+    right:"₹55–₹70 lakh",
+    high:"Above ₹70 lakh",
+    note:"Choose the range closest to your intended purchase budget."
+  }
+};
+
+let step = 1;
+const answers = {};
+
+function renderDistricts(){
+  const select = document.getElementById("districtSelect");
+  districts.forEach(d => {
+    const option = document.createElement("option");
+    option.value = d;
+    option.textContent = d;
+    select.appendChild(option);
+  });
+  select.addEventListener("change", () => {
+    answers.district = select.value;
+    document.querySelector('[data-step="4"] .error').style.display = "none";
+  });
+}
+renderDistricts();
+
+function renderBudget(){
+  const model = answers.model || "Not Sure";
+  const b = budgetMap[model];
+  const wrap = document.getElementById("budgetOptions");
+  wrap.innerHTML = [
+    ["low", b.low],
+    ["right", b.right],
+    ["high", b.high]
+  ].map(([key,title]) => `<div class="option budget-option" data-value="${title}" data-budget="${key}"><strong>${title}</strong></div>`).join("");
+  wrap.querySelectorAll(".option").forEach(el => el.onclick = () => selectOption(el, "budget"));
+  document.getElementById("priceNote").style.display = "none";
+}
+
+function selectOption(el, type){
+  const parent = el.parentElement;
+  parent.querySelectorAll(".option").forEach(x => x.classList.remove("selected"));
+  el.classList.add("selected");
+  answers[type] = el.dataset.value;
+  if(type === "budget") answers.budgetBand = el.dataset.budget;
+  el.closest(".question").querySelector(".error").style.display = "none";
+}
+
+function validate(){
+  const q = document.querySelector(`.question[data-step="${step}"]`);
+  let ok = true;
+  if(step === 1 && !answers.intent) ok = false;
+  if(step === 2 && !answers.model) ok = false;
+  if(step === 3 && !answers.budget) ok = false;
+  if(step === 4 && !document.getElementById("districtSelect").value) ok = false;
+  if(step === 5 && !document.getElementById("contactTime").value.trim()) ok = false;
+  if(step === 6){
+    ["name","phone","email"].forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el.value.trim()) { el.reportValidity(); ok=false; }
+    });
+  }
+  if(!ok) q.querySelector(".error").style.display="block";
+  return ok;
+}
+
+function go(dir){
+  if(dir > 0 && !validate()) return;
+
+  if(dir > 0 && step === 1 && answers.intent === "No, I'm just browsing."){
+    showBlocked();
+    return;
+  }
+  if(dir > 0 && step === 2) renderBudget();
+  if(dir > 0 && step === 3 && answers.budgetBand === "low"){
+    showBlocked();
+    return;
+  }
+  if(dir > 0 && step === 4 && answers.district === "Outside Kerala"){
+    showBlocked();
+    return;
+  }
+
+  step += dir;
+  if(step < 1) step=1;
+  if(step > 6) step=6;
+  renderStep();
+}
+
+function renderStep(){
+  document.querySelectorAll(".question").forEach(q => q.classList.toggle("active", Number(q.dataset.step)===step));
+  const districtSelect = document.getElementById("districtSelect");
+  if(districtSelect && answers.district) districtSelect.value = answers.district;
+  document.getElementById("stepLabel").textContent = `${step} / 6`;
+  document.getElementById("progress").style.width = `${(step/6)*100}%`;
+  document.getElementById("backBtn").style.display = step>1 ? "block":"none";
+  document.getElementById("nextBtn").style.display = step<6 ? "block":"none";
+  if(step===6) document.getElementById("navActions").style.display="none";
+}
+
+document.querySelectorAll('[data-step="1"] .option').forEach(el => {
+  el.onclick = () => selectOption(el, "intent");
+});
+
+document.querySelectorAll('#modelOptions .model-option').forEach(el => {
+  el.onclick = () => selectOption(el, "model");
+});
+
+document.getElementById("leadForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  if(!validate()) return;
+
+  const payload = {
+    source:"MINI Kerala Lead Landing Page",
+    intent:answers.intent,
+    model:answers.model,
+    budget:answers.budget,
+    budgetBand:answers.budgetBand,
+    district:answers.district,
+    preferredContactTime:document.getElementById("contactTime").value.trim(),
+    name:document.getElementById("name").value.trim(),
+    phone:document.getElementById("phone").value.trim(),
+    email:document.getElementById("email").value.trim(),
+    message:document.getElementById("message").value.trim(),
+    submittedAt:new Date().toISOString()
+  };
+
+  const btn=document.querySelector(".submit");
+  btn.disabled=true;
+  btn.textContent="Submitting…";
+
+  if(FORM_ENDPOINT === "PASTE_YOUR_FORM_ENDPOINT_HERE"){
+    console.log("Lead payload:", payload);
+    document.getElementById("leadForm").style.display="none";
+    document.getElementById("success").style.display="block";
+    return;
+  }
+
+  try{
+    await fetch(FORM_ENDPOINT,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload),
+      mode:"no-cors"
+    });
+    document.getElementById("leadForm").style.display="none";
+    document.getElementById("success").style.display="block";
+  }catch(err){
+    btn.disabled=false;
+    btn.textContent="Register My Interest";
+    alert("We couldn't submit the enquiry. Please try again.");
+  }
+});
+
+function showBlocked(){
+  document.getElementById("leadForm").style.display="none";
+  document.getElementById("blocked").style.display="block";
+}
+</script>
+</body>
+</html>
