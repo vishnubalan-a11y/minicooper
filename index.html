@@ -141,6 +141,7 @@ html{scroll-behavior:smooth;scroll-padding-top:100px}body{background:#f7f8f3;col
 .purchase-detail{margin-top:20px}.optional{font-weight:400;color:var(--muted);font-size:11px}
 input[type=date]{width:100%;border:1px solid #bdbdb8;border-radius:8px;padding:14px 15px;font:inherit;outline:none;background:#fff;color:var(--ink)}
 input[type=date]:focus{border-color:#111;box-shadow:0 0 0 2px #eee}
+.date-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.date-chip{border:1px solid #bdbdb8;background:#fff;border-radius:8px;padding:13px 6px;font:inherit;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;transition:.18s}.date-chip:hover{border-color:#555}.date-chip.selected{border-color:#111;background:#f1f1ee;box-shadow:inset 0 0 0 1px #111}.date-note{font-size:12px;color:var(--muted);margin-top:8px;min-height:15px}#contactDate{margin-top:8px}
 @media(max-width:520px){.compact-options{grid-template-columns:repeat(3,1fr)}.compact-options .option strong{font-size:12px}}
 
 .price-note.visible-note{padding:0;overflow:hidden;border:1px solid #cad6c7;border-left:0;background:linear-gradient(145deg,#f5f8f2,#eaf1e5);box-shadow:0 12px 35px rgba(30,54,33,.07)}
@@ -261,7 +262,7 @@ src="https://www.facebook.com/tr?id=1055821603942625&ev=PageView&noscript=1"></n
             <div class="field-group"><label class="field" for="email">Email address <span class="required">*</span></label><input id="email" type="email" autocomplete="email" required></div>
           </div>
           <div class="grid2">
-            <div class="field-group"><label class="field" for="contactDate">Preferred call date <span class="required">*</span></label><input id="contactDate" type="date" required></div>
+            <div class="field-group"><label class="field" for="contactDate">Preferred call date <span class="required">*</span></label><div class="date-chips" id="dateChips" role="radiogroup" aria-label="Preferred call date"><button type="button" class="date-chip" data-day="0" role="radio" aria-checked="false">Today</button><button type="button" class="date-chip" data-day="1" role="radio" aria-checked="false">Tomorrow</button><button type="button" class="date-chip" data-day="pick" role="radio" aria-checked="false">Pick a date</button></div><div class="date-note" id="dateNote" aria-live="polite"></div><input id="contactDate" type="date" required style="display:none"></div>
             <div class="field-group"><label class="field" for="contactSlot">Preferred time <span class="required">*</span></label><select id="contactSlot" class="select-field" required><option value="">Select a time</option><option>9 AM – 12 PM</option><option>12 PM – 3 PM</option><option>3 PM – 6 PM</option><option>6 PM – 8 PM</option></select></div>
           </div>
           <div class="field-group"><label class="field" for="message">Anything else you’d like us to know? <span class="optional">(Optional)</span></label><textarea id="message" placeholder="Share any model, finance or test-drive preferences"></textarea></div>
@@ -367,7 +368,26 @@ function leadScore(){
 }
 function showBlocked(){document.getElementById('leadForm').style.display='none';document.getElementById('blocked').style.display='block'}
 renderDistricts();bindOptions('#timelineOptions .option','purchaseTimeline');bindOptions('#modelOptions .option','model');bindOptions('#budgetOptions .option','priceReadiness');bindOptions('#testDriveOptions .option','testDriveTimeline');bindOptions('#exchangeOptions .option','exchangePlan');
-document.getElementById('contactDate').min=new Date().toISOString().split('T')[0];
+(function(){
+ var dateInput=document.getElementById('contactDate'),chips=document.querySelectorAll('#dateChips .date-chip'),note=document.getElementById('dateNote');
+ function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+ function addDays(n){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+n);return d}
+ function pretty(d){return d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}
+ dateInput.min=iso(addDays(0));
+ function mark(chip){chips.forEach(function(c){var on=c===chip;c.classList.toggle('selected',on);c.setAttribute('aria-checked',on?'true':'false')})}
+ chips.forEach(function(chip){chip.addEventListener('click',function(){
+  var day=chip.getAttribute('data-day');mark(chip);
+  if(day==='pick'){
+   dateInput.style.display='block';dateInput.value='';note.textContent='';
+   dateInput.focus();try{if(dateInput.showPicker)dateInput.showPicker()}catch(e){}
+  }else{
+   var d=addDays(parseInt(day,10));dateInput.value=iso(d);dateInput.style.display='none';note.textContent=pretty(d);
+  }
+ })});
+ dateInput.addEventListener('change',function(){
+  if(dateInput.value){var p=dateInput.value.split('-');note.textContent=pretty(new Date(+p[0],+p[1]-1,+p[2],12))}else{note.textContent=''}
+ });
+})();
 document.getElementById('leadForm').addEventListener('keydown',e=>{if(e.target.matches('.option')&&['Enter',' '].includes(e.key)){e.preventDefault();e.target.click()}});
 document.querySelectorAll('.option').forEach(el=>{el.tabIndex=0;el.setAttribute('role','radio');el.setAttribute('aria-checked','false');el.parentElement.setAttribute('role','radiogroup')});
 function getCookie(name){const row=document.cookie.split('; ').find(item=>item.startsWith(name+'='));return row?decodeURIComponent(row.slice(name.length+1)):''}
